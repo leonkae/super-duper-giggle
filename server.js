@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const dns = require('dns');
+const User = require("./models/User")
 
 const app = express();
 
@@ -25,6 +26,34 @@ const connectDB = async () => {
 
 connectDB();
 
+app.post("/api/users", async (req, res) => {
+    try{
+        const {name, email} = req.body
+        const newUser = await User.create({name, email})
+        res.status(201).json(newUser)
+    } catch(error){
+        if (error.code === 11000){
+            return res.status(400).json({
+                message: "Email already exists"
+            })
+        }
+        res
+            .status(500)
+            .json({message: "Failed to create User", error : error.message})
+    }
+})
+
+app.get("/api/users", async (req, res) => {
+    try{
+        const users = await User.find()
+        res.json(users)
+    } catch (error) {
+        res.status(500).json({
+            message : "Failed to fetch users",
+            error : error.message
+        })
+    }
+})
 
 app.get("/", (req, res) => {
     res.json({
