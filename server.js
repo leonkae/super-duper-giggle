@@ -29,8 +29,8 @@ connectDB();
 
 app.post("/api/users", async (req, res) => {
     try{
-        const {name, email} = req.body
-        const newUser = await User.create({name, email})
+        const {name, email, bio, profilePicture} = req.body
+        const newUser = await User.create({name, email, bio, profilePicture})
         res.status(201).json(newUser)
     } catch(error){
         if (error.code === 11000){
